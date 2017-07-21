@@ -90,3 +90,53 @@ let rec iterateAndTransform (t: 'a -> 'b) (f: 'a -> 'a) (x: 'a): 'b seq =
 
 /// <summary>Infinite iterator over all of the prime numbers.</summary>
 let primes: int seq = iterateAndTransform (fun x -> fst (List.last x)) calculateNextPrime initPrimes
+
+/// <summary>Returns the maximum power of 'p' that is exactly divisible into 'n'.</summary>
+/// <param name="n">Value into which 'p' is divided.</param>
+/// <param name="p">Value to divide into 'n'.</param>
+/// <returns>The maximum power of 'p' that is exactly divisible into 'n'.</returns>
+let rec maxMultiple (n: int) (p: int): int =
+    if ((n = 0) || (p = 0))
+    then 0
+    else
+        let rem = n % p
+        match rem with
+        | 0 -> 1 + (maxMultiple (n / p) p)
+        | _ -> 0
+
+/// <summary>Returns a factorisation of 'n' in terms of the given sequence of factors.
+/// Note: will not terminate if 'n' can't be factorised by the factors in the sequence.</summary>
+/// <param name="n">Value to be factorised.</param>
+/// <param name="factors">Sequence of factors to use for factorisation.</param>
+/// <returns>Sequence of (factor,power) pairs.</returns>
+let rec factorise (n: int) (factors: int seq): (int*int) seq =
+    seq {
+        match n with
+        | 0 | 1 -> yield! Seq.empty
+        | neg when neg < 0 -> yield! (factorise (-n) factors)
+        | _ ->
+            let factor = Seq.head factors
+            let power = maxMultiple n factor
+            if (power >= 1) then
+                yield (factor,power)
+                yield! (factorise (n/(pown factor power)) (Seq.tail factors))
+            else
+                yield! (factorise n (Seq.tail factors))
+    }
+
+/// <summary>Returns a factorization of 'n' in terms of the given sequence of factors.
+/// Note: will not terminate if 'n' can't be factorized by the factors in the sequence.</summary>
+/// <param name="n">Value to be factorized.</param>
+/// <param name="factors">Sequence of factors to use for factorization.</param>
+/// <returns>Sequence of (factor,power) pairs.</returns>
+let factorize (n: int) (factors: int seq): (int*int) seq = factorise n factors
+
+/// <summary>Returns the prime factors of 'n'.</summary>
+/// <param name="n">Value to be factorised/factorized.</param>
+/// <returns>List of (factor,power) pairs.</returns>
+let rec primeFactorsOf (n: int): (int*int) list =
+    match n with
+    | 0 -> []
+    | 1 -> [(1,1)]
+    | neg when neg < 0 -> primeFactorsOf (-neg)
+    | _ -> factorise n primes |> Seq.toList

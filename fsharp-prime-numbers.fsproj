@@ -7,12 +7,20 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0cd30106-a56a-417b-8aff-b89b49f871b7</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>fsharp_prime_numbers</RootNamespace>
-    <AssemblyName>fsharp_prime_numbers</AssemblyName>
+    <RootNamespace>org.contakt.math.prime</RootNamespace>
+    <AssemblyName>PrimeNumbers</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>fsharp-prime-numbers</Name>
+    <Name>PrimeNumbers</Name>
+    <PackageId>org.contakt.math.prime.PrimeNumbers</PackageId>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <Authors>Anthony Coates (abcoates@contakt.org)</Authors>
+    <Description>Library for generating prime numbers.</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
+    <Copyright>Copyright © 2017 Anthony Coates</Copyright>
+    <PackageTags>f# fsharp prime</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

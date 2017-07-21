@@ -19,3 +19,9 @@ let N = 20
 printfn "\n#### 3 #### First %d prime numbers ####" N
 let result2 = primes |> Seq.take N |> Seq.toList
 printfn "%A" result2
+
+// How to get the prime factors of an integer
+let n = 14400
+printfn "\n#### 4 #### Prime factors of %d ####" n
+let result3 = primeFactorsOf n
+printfn "%A" result3
