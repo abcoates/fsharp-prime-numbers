@@ -25,3 +25,5 @@ let n = 14400
 printfn "\n#### 4 #### Prime factors of %d ####" n
 let result3 = primeFactorsOf n
 printfn "%A" result3
+let n2 = result3 |> List.map (fun pair -> pown (fst pair) (snd pair)) |> List.fold (*) 1
+printfn "Product of factors is: %d" n2
