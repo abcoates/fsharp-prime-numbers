@@ -5,7 +5,7 @@
 /// <param name="prime">A prime number.</param>
 /// <param name="primemult">A multiple of the prime number.</param>
 /// <returns>A new prime multiple that is >= n.</returns>
-let rec incprime (n: int) (prime: int) (primemult: int): int =
+let rec private incprime (n: int) (prime: int) (primemult: int): int =
     if (primemult >= n)
     then primemult
     else incprime n prime (primemult + prime)
@@ -16,7 +16,7 @@ let rec incprime (n: int) (prime: int) (primemult: int): int =
 /// <param name="primepair">A tuple of a prime number and a multiple of that prime number.</param>
 /// <param name="primemult">A multiple of the prime number.</param>
 /// <returns>A tuple of a boolean and a new prime pair.</returns>
-let factortest (n:int) (primepair: int*int): bool*(int*int) =
+let private factortest (n:int) (primepair: int*int): bool*(int*int) =
     let prime = fst primepair
     let primemult = snd primepair
     if (primemult > n) 
@@ -32,7 +32,7 @@ let factortest (n:int) (primepair: int*int): bool*(int*int) =
 /// <param name="result">.</param>
 /// <param name="n">.</param>
 /// <returns>.</returns>
-let calculateprimes (result: (int*int) list) (n: int): (int*int) list =
+let private calculateprimes (result: (int*int) list) (n: int): (int*int) list =
     let testprimes = result |> List.map (factortest n)
     let notPrime: bool = testprimes |> List.map fst |> List.exists id
     if (notPrime)
@@ -61,6 +61,13 @@ let rec iterateUntil (f: 'a -> 'a) (p: 'a -> 'a -> bool) (x: 'a): 'a =
     then y
     else iterateUntil f p y
 
+/// <summary>Given a list of (prime, prime multiple) pairs,
+/// returns the list with a (prime, prime multiple) pair for the next prime appended.
+/// Use 'initPrimes' as the initial list.
+/// This function allows you to create a re-usable and extendable list of primes.</summary>
+/// <param name="result">List of (prime, prime multiple) pairs produced by 'calculateNextPrime'
+/// (or use 'initPrimes').</param>
+/// <returns>List of (prime, prime multiple) pairs with an additional prime entry appended.</returns>
 let calculateNextPrime (result: (int*int) list): (int*int) list =
     let nmin = fst (result |> List.last) + 1
     let p (result: 'a list) (newresult: 'a list) = (List.length newresult) > (List.length result)
@@ -88,8 +95,11 @@ let rec iterateAndTransform (t: 'a -> 'b) (f: 'a -> 'a) (x: 'a): 'b seq =
         yield! (iterateAndTransform  t f (f x))
     }
 
+/// <summary>Private master version of infinite iterator over all of the prime numbers.</summary>
+let private primesMaster: int seq = iterateAndTransform (fun x -> fst (List.last x)) calculateNextPrime initPrimes
+
 /// <summary>Infinite iterator over all of the prime numbers.</summary>
-let primes: int seq = iterateAndTransform (fun x -> fst (List.last x)) calculateNextPrime initPrimes
+let primes = Seq.cache primesMaster
 
 /// <summary>Returns the maximum power of 'p' that is exactly divisible into 'n'.</summary>
 /// <param name="n">Value into which 'p' is divided.</param>
