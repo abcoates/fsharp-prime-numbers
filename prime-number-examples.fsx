@@ -1,7 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
 // for more guidance on F# programming.
 
-#load "PrimeNumbers.fs"
+#r "bin\Release\PrimeNumbers.dll"
 open org.contakt.math.prime.PrimeNumbers
 
 // How to get the prime numbers up to a given value.
