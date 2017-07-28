@@ -1,6 +1,7 @@
 ﻿module org.contakt.math.prime.PrimeNumbers
 
-/// <summary>Given a value 'n', a prime number, and a multiple of that prime, increase the multiple until it is >= n then return it.</summary>
+/// <summary>Given a value 'n', a prime number, and a multiple of that prime,
+/// increase the multiple until it is >= n then return it.</summary>
 /// <param name="n">Value which sets a new minimum bound for the prime multiple.</param>
 /// <param name="prime">A prime number.</param>
 /// <param name="primemult">A multiple of the prime number.</param>
@@ -10,15 +11,15 @@ let rec private incprime (n: int) (prime: int) (primemult: int): int =
     then primemult
     else incprime n prime (primemult + prime * (max 1 ((n - primemult) / prime)))
 
-/// <summary>Given a value 'n' and a pair of a prime number and a multiple of that prime, returns whether n is a multiple of that prime
+/// <summary>Given a value 'n' and a pair of a prime number and a multiple of that prime,
+/// returns whether n is a multiple of that prime
 /// along with a new prime/multiple pair where the multiple is >= n.</summary>
 /// <param name="n">Value which sets a new minimum bound for the prime multiple.</param>
 /// <param name="primepair">A tuple of a prime number and a multiple of that prime number.</param>
 /// <param name="primemult">A multiple of the prime number.</param>
 /// <returns>A tuple of a boolean and a new prime pair.</returns>
 let private factortest (n:int) (primepair: int*int): bool*(int*int) =
-    let prime = fst primepair
-    let primemult = snd primepair
+    let (prime, primemult) = primepair
     if (primemult < n) 
     then
         let newmult = incprime n prime primemult
@@ -26,16 +27,19 @@ let private factortest (n:int) (primepair: int*int): bool*(int*int) =
     else
         (primemult = n, (prime, primemult))
 
-/// <summary>Given a value 'n' and a list of pairs of primes and prime multiples for all primes < n, prepends a prime/multiple pair for 'n' if 'n' is prime.</summary>
+/// <summary>Given a value 'n' and a list of pairs of primes and prime multiples for all primes < n,
+/// prepends a prime/multiple pair for 'n' if 'n' is prime.</summary>
 /// <param name="result">List of pairs of primes & primes multiples, in decreasing size of prime.</param>
 /// <param name="n">Value to test as a prime.</param>
-/// <returns>List of pairs of primes & primes multiples, in decreasing size of prime, possibly with '(n,n)' prepended.</returns>
+/// <returns>List of pairs of primes & primes multiples, in decreasing size of prime,
+/// possibly with '(n,n)' prepended.</returns>
 let private calculateprimes (result: (int*int) list) (n: int): (int*int) list =
     let testprimes = result |> List.map (factortest n)
-    let notPrime: bool = testprimes |> List.map fst |> List.exists id
+    let (tests, newresult) = testprimes |> List.unzip
+    let notPrime: bool = tests |> List.exists id
     if (notPrime)
-    then result
-    else (n,n)::result
+    then newresult
+    else (n,n)::newresult
 
 /// <summary>Initial prime/multiple pair.</summary>
 let initPrimes = [(2,2)]
@@ -49,9 +53,11 @@ let primesUpTo (nmax: int): int list =
     | n when n < 2 -> []
     | _ -> [3..nmax] |> List.fold calculateprimes initPrimes |> List.map fst |> List.rev
 
-/// <summary>Iteratively applies 'f' to 'x', then to 'f x', etc. until the result causes the predicate 'p' to return 'true'.</summary>
+/// <summary>Iteratively applies 'f' to 'x', then to 'f x', etc.
+/// until the result causes the predicate 'p' to return 'true'.</summary>
 /// <param name="f">Function to apply iteratively.</param>
-/// <param name="p">Predicate function that returns 'true' when the iteration should stop.  Its parameters are the previous state and the current state.</param>
+/// <param name="p">Predicate function that returns 'true' when the iteration should stop.
+/// Its parameters are the previous state and the current state.</param>
 /// <param name="x">Starting value to which 'f' is applied iteratively.</param>
 let rec iterateUntil (f: 'a -> 'a) (p: 'a -> 'a -> bool) (x: 'a): 'a =
     let y = f x
@@ -67,12 +73,12 @@ let rec iterateUntil (f: 'a -> 'a) (p: 'a -> 'a -> bool) (x: 'a): 'a =
 /// (or use 'initPrimes').</param>
 /// <returns>List of (prime, prime multiple) pairs with an additional prime entry appended.</returns>
 let calculateNextPrime (result: (int*int) list): (int*int) list =
+    printf "." // TODO: remove debugging
     let nmin = fst (result |> List.head) + 1
     let p (result: 'a list) (newresult: 'a list) = (List.length newresult) > (List.length result)
     let p2 (result: 'b*('a list)) (newresult: 'b*('a list)) = (List.length (snd newresult)) > (List.length (snd result))
     let rec f state =
-        let n = fst state
-        let result = snd state
+        let (n, result) = state
         let newresult = calculateprimes result n
         if (p result newresult)
         then (n, newresult)
