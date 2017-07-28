@@ -8,7 +8,7 @@
 let rec private incprime (n: int) (prime: int) (primemult: int): int =
     if (primemult >= n)
     then primemult
-    else incprime n prime (primemult + prime)
+    else incprime n prime (primemult + prime * (max 1 ((n - primemult) / prime)))
 
 /// <summary>Given a value 'n' and a pair of a prime number and a multiple of that prime, returns whether n is a multiple of that prime
 /// along with a new prime/multiple pair where the multiple is >= n.</summary>
@@ -19,25 +19,23 @@ let rec private incprime (n: int) (prime: int) (primemult: int): int =
 let private factortest (n:int) (primepair: int*int): bool*(int*int) =
     let prime = fst primepair
     let primemult = snd primepair
-    if (primemult > n) 
-    then (false, (prime, primemult))
+    if (primemult < n) 
+    then
+        let newmult = incprime n prime primemult
+        (newmult = n, (prime, newmult))    
     else
-        if (primemult = n)
-        then (true, (prime, primemult))
-        else
-            let newmult = incprime n prime primemult
-            (newmult = n, (prime, newmult))
+        (primemult = n, (prime, primemult))
 
-/// <summary>Given a value 'n' and a set of pairs of primes and prime multiples for all primes < n.</summary>
-/// <param name="result">.</param>
-/// <param name="n">.</param>
-/// <returns>.</returns>
+/// <summary>Given a value 'n' and a list of pairs of primes and prime multiples for all primes < n, prepends a prime/multiple pair for 'n' if 'n' is prime.</summary>
+/// <param name="result">List of pairs of primes & primes multiples, in decreasing size of prime.</param>
+/// <param name="n">Value to test as a prime.</param>
+/// <returns>List of pairs of primes & primes multiples, in decreasing size of prime, possibly with '(n,n)' prepended.</returns>
 let private calculateprimes (result: (int*int) list) (n: int): (int*int) list =
     let testprimes = result |> List.map (factortest n)
     let notPrime: bool = testprimes |> List.map fst |> List.exists id
     if (notPrime)
-    then testprimes |> List.map snd
-    else (List.append (testprimes |> List.map snd) [(n,n)])
+    then result
+    else (n,n)::result
 
 /// <summary>Initial prime/multiple pair.</summary>
 let initPrimes = [(2,2)]
@@ -49,7 +47,7 @@ let primesUpTo (nmax: int): int list =
     match nmax with
     | 2 -> [2]
     | n when n < 2 -> []
-    | _ -> [3..nmax] |> List.fold calculateprimes initPrimes |> List.map fst
+    | _ -> [3..nmax] |> List.fold calculateprimes initPrimes |> List.map fst |> List.rev
 
 /// <summary>Iteratively applies 'f' to 'x', then to 'f x', etc. until the result causes the predicate 'p' to return 'true'.</summary>
 /// <param name="f">Function to apply iteratively.</param>
@@ -69,7 +67,7 @@ let rec iterateUntil (f: 'a -> 'a) (p: 'a -> 'a -> bool) (x: 'a): 'a =
 /// (or use 'initPrimes').</param>
 /// <returns>List of (prime, prime multiple) pairs with an additional prime entry appended.</returns>
 let calculateNextPrime (result: (int*int) list): (int*int) list =
-    let nmin = fst (result |> List.last) + 1
+    let nmin = fst (result |> List.head) + 1
     let p (result: 'a list) (newresult: 'a list) = (List.length newresult) > (List.length result)
     let p2 (result: 'b*('a list)) (newresult: 'b*('a list)) = (List.length (snd newresult)) > (List.length (snd result))
     let rec f state =
@@ -96,7 +94,7 @@ let rec iterateAndTransform (t: 'a -> 'b) (f: 'a -> 'a) (x: 'a): 'b seq =
     }
 
 /// <summary>Private master version of infinite iterator over all of the prime numbers.</summary>
-let private primesMaster: int seq = iterateAndTransform (fun x -> fst (List.last x)) calculateNextPrime initPrimes
+let private primesMaster: int seq = iterateAndTransform (fun x -> fst (List.head x)) calculateNextPrime initPrimes
 
 /// <summary>Infinite iterator over all of the prime numbers.</summary>
 let primes = Seq.cache primesMaster
