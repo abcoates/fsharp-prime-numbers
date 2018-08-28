@@ -73,7 +73,6 @@ let rec iterateUntil (f: 'a -> 'a) (p: 'a -> 'a -> bool) (x: 'a): 'a =
 /// (or use 'initPrimes').</param>
 /// <returns>List of (prime, prime multiple) pairs with an additional prime entry appended.</returns>
 let calculateNextPrime (result: (int*int) list): (int*int) list =
-    printf "." // TODO: remove debugging
     let nmin = fst (result |> List.head) + 1
     let p (result: 'a list) (newresult: 'a list) = (List.length newresult) > (List.length result)
     let p2 (result: 'b*('a list)) (newresult: 'b*('a list)) = (List.length (snd newresult)) > (List.length (snd result))
@@ -154,3 +153,17 @@ let rec primeFactorsOf (n: int): (int*int) list =
     | 1 -> [(1,1)]
     | neg when neg < 0 -> primeFactorsOf (-neg)
     | _ -> factorise n primes |> Seq.toList
+
+let gcd (a: int) (b: int): int =
+    let primefactorsa = primeFactorsOf a
+    let primefactorsb = primeFactorsOf b
+    let primesa = primefactorsa |> List.map fst |> Set.ofList
+    let primesb = primefactorsb |> List.map fst |> Set.ofList
+    let commonprimes = Set.intersect primesa primesb |> Set.toList
+    let (pa, pma) = primefactorsa |> List.filter (fun (p,pm) -> List.contains p commonprimes) |> List.unzip
+    let (pb, pmb) = primefactorsb |> List.filter (fun (p,pm) -> List.contains p commonprimes) |> List.unzip
+    // Problems after this line
+    let pmmin: int list = List.zip pma pmb |> List.map (fun (a,b) -> min a b)
+    let gcdfactors = List.zip commonprimes pmmin
+    let gcd = gcdfactors |> List.map (fun (p,pm) -> pown p pm) |> List.fold (*) 1
+    gcd

@@ -2,3 +2,4 @@
 /obj/
 *.hs
 *.hs.html
+/results.xlsx

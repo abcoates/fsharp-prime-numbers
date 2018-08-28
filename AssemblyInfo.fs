@@ -11,7 +11,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
 [<assembly: AssemblyProduct("PrimeNumbers")>]
-[<assembly: AssemblyCopyright("Copyright © 2017 Anthony Coates")>]
+[<assembly: AssemblyCopyright("Copyright © 2017-2018 Anthony Coates")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 

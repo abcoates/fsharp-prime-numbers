@@ -63,6 +63,11 @@
     <None Include="prime-number-examples.fsx" />
     <Content Include="packages.config" />
     <None Include="print-primes.fsx" />
+    <Compile Include="PrimeNumbers2.fs" />
+    <None Include="prime-number-examples-2.fsx" />
+    <None Include="print-primes-2.fsx" />
+    <Compile Include="PrimeNumbers3.fs" />
+    <None Include="print-primes-3.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
